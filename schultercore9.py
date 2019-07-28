@@ -223,10 +223,56 @@ def train_generator(num_steps, h5_path, params, filter_depth):
         # send data at the end of each batch
         yield x_data, y
 
+def load_linear_val_data(hdf5_path):
+
+    hdf5_file=h5py.File(hdf5_path, "r")
+    half_window=half_window
+    x_data=[]
+    y=[]
+    frame_skips=int(params['skip_size']/((1/params['fs'])*params['hop_length']))
+    print(frame_skips)
+
+    for song_index in range(int(params['songs_to_validate'])):
+        song_num_frames = hdf5_file['val_lengths'][song_index, ...]
+        max_index=song_num_frames-half_window
+        next_song=False
+        for sample_index in range(half_window+1, max_index-1, frame_skips):
+            if sample_index>=(song_num_frames-half_window-1):
+                next_song=True
+                break
+            else:
+                # create sample excerpt
+                sample_excerpt = hdf5_file['val_features'][song_index,:,(sample_index-half_window):(sample_index+half_window+1)]
+                x_data.append(sample_excerpt)
+                frame_time = sample_index*params['hop_length']/params['fs']
+                label_points=hdf5_file['val_labels'][song_index, ...]
+                previous_value=-1
+                for row in range(500):
+                    # make sure the index doesn't accidently go into the padded zeros section
+                    if label_points[row][0]>previous_value:
+                        if label_points[row][0]>frame_time:
+                            # go back one and get label, third element holds the label
+                            y.append(label_points[row-1][2])
+                            # don't search any more rows
+                            break
+                        else:
+                            previous_value=label_points[row][0]
+                    else:
+                        y.append(label_points[row-1][2])
+                        # don't search any more rows
+                        break
+        if next_song==True:
+            break
+        x_data = np.asarray(x_data)
+        x_data = x_data.reshape((x_data.shape[0], x_data.shape[1], x_data.shape[2], 1))
+        y = np.asarray(y)
+    return x_data, y
+
+
 def val_generator(num_steps,h5_path, params):
 
-    #convert hop size in seconds to window hop amount
-    frame_skips=int(params['skip_size']/(1/params['fs']*params['hop_length']))
+    #convert hop size in seconds to window hop amount   
+    frame_skips=int(params['skip_size']/((1/params['fs'])*params['hop_length']))
     hdf5_file = h5py.File(h5_path, "r")  # open hdf5 file in read mode
 
     while 1:
@@ -291,3 +337,35 @@ def val_generator(num_steps,h5_path, params):
                 x_data = x_data.reshape((x_data.shape[0], x_data.shape[1], x_data.shape[2], 1))
                 y = np.asarray(y)
                 yield x_data, y
+
+def make_history(model_history, model_name):
+
+    loss = model_history['loss']
+    acc = model_history['acc']
+    val_loss = model_history['val_loss']
+    val_acc = model_history['val_acc']
+
+    for x in range(len(loss)):
+        print('loss: ', loss[x], 'acc: ', acc[x], 'val_loss: ', val_loss[x], 'val_acc: ', val_acc[x])
+
+    name='Train and Val acc'
+    epochs = range(1, len(acc) + 1)
+    plt.figure()
+    plt.plot(epochs, acc, 'bo', label='Training acc')
+    plt.plot(epochs, val_acc, 'b', label='Validation acc')
+    plt.title(name)
+    plt.legend()
+    plt.savefig('model_name_Acc.png')
+    plt.close(name)
+
+    name='Train and Val loss'
+    plt.figure()
+    plt.plot(epochs, loss, 'bo', label='Training loss')
+    plt.plot(epochs, val_loss, 'b', label='Validation loss')
+    plt.title(name)
+    plt.legend()
+    plt.savefig('model_name_Loss.png')
+    plt.close(name)
+
+    print('History saved!')
+    return

@@ -53,6 +53,7 @@ num_val_steps=int(num_val_steps)
 # save the best performing model
 save_best = ModelCheckpoint('models/' +sys.argv[2] +'.h5', monitor='val_loss', save_best_only=True)
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, verbose=0, mode='auto', baseline=None, restore_best_weights=False)
+x_val, y_val=load_linear_val_data(hdf5_path)
 
 print(params)
 
@@ -85,9 +86,11 @@ history = model.fit_generator(train_generator(params['num_train_steps'], hdf5_pa
 print(params)
 
 print(params)
-print('Training took: ' +str(time.time()-start_time))
+print('Training took: ' +str(time.time()-start_time) +' seconds.')
+
+make_history(history, sys.argv[2])
 
 # save model history to disk as the same name as model
-pickle_out = open('modelHistory/' +sys.argv[2] +'.pickle', 'wb')
-pickle.dump(history.history, pickle_out)
-pickle_out.close()
+# pickle_out = open('modelHistory/' +sys.argv[2] +'.pickle', 'wb')
+# pickle.dump(history.history, pickle_out)
+# pickle_out.close()
