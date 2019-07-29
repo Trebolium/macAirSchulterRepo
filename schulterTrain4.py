@@ -19,14 +19,14 @@ print('Ignore this test print' +str(time.time()-start_time))
 params=load_parameters()
 
 #just to get number of files per set, used further down in step computing
-print('gathering files...')
-train_dir = '/Users/brendanoconnor/Desktop/APP/MXX-git2-/SchulterReproduction/jamendo/audioTrain/'
-train_files = [train_dir + x for x in os.listdir(train_dir) if x.endswith('.wav') or x.endswith('.ogg') or x.endswith('.mp3')]
-val_dir = '/Users/brendanoconnor/Desktop/APP/MXX-git2-/SchulterReproduction/jamendo/audioVal/'
-val_files = [val_dir + x for x in os.listdir(val_dir) if x.endswith('.wav') or x.endswith('.ogg') or x.endswith('.mp3')]
-test_dir = '/Users/brendanoconnor/Desktop/APP/MXX-git2-/SchulterReproduction/jamendo/audioTest/'
-test_files = [test_dir + x for x in os.listdir(test_dir) if x.endswith('.wav') or x.endswith('.ogg') or x.endswith('.mp3')]
-print(len(train_files), 'train files \n', len(val_files), 'validation files \n', len(test_files), 'test files')
+# print('gathering files...')
+# train_dir = '/Users/brendanoconnor/Desktop/APP/MXX-git2-/SchulterReproduction/jamendo/audioTrain/'
+# train_files = [train_dir + x for x in os.listdir(train_dir) if x.endswith('.wav') or x.endswith('.ogg') or x.endswith('.mp3')]
+# val_dir = '/Users/brendanoconnor/Desktop/APP/MXX-git2-/SchulterReproduction/jamendo/audioVal/'
+# val_files = [val_dir + x for x in os.listdir(val_dir) if x.endswith('.wav') or x.endswith('.ogg') or x.endswith('.mp3')]
+# test_dir = '/Users/brendanoconnor/Desktop/APP/MXX-git2-/SchulterReproduction/jamendo/audioTest/'
+# test_files = [test_dir + x for x in os.listdir(test_dir) if x.endswith('.wav') or x.endswith('.ogg') or x.endswith('.mp3')]
+# print(len(train_files), 'train files \n', len(val_files), 'validation files \n', len(test_files), 'test files')
 
 
 # make sure we have the hdf5 data file
