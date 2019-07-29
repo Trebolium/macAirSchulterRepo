@@ -341,7 +341,7 @@ def val_generator(num_steps,h5_path, params):
 def make_history(model_history, model_name):
 
     model_history=model_history.history
-    pickle_out = open('modelHistory/' +sys.argv[2] +'.pickle', 'wb')
+    pickle_out = open('modelHistory/' +model_name +'.pickle', 'wb')
     pickle.dump(model_history, pickle_out)
     pickle_out.close()
 
