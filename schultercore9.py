@@ -357,7 +357,7 @@ def make_history(model_history, model_name):
     plt.plot(epochs, val_acc, 'b', label='Validation acc')
     plt.title(name)
     plt.legend()
-    plt.savefig(model_name +'_Acc.png')
+    plt.savefig('modelHistory/visuals/' +model_name +'_Acc.png')
     plt.close(name)
 
     name='Train and Val loss'
@@ -366,7 +366,7 @@ def make_history(model_history, model_name):
     plt.plot(epochs, val_loss, 'b', label='Validation loss')
     plt.title(name)
     plt.legend()
-    plt.savefig(model_name +'_Loss.png')
+    plt.savefig('modelHistory/visuals/' +model_name +'_Loss.png')
     plt.close(name)
 
     print('History saved!')
