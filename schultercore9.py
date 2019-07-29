@@ -15,8 +15,6 @@ import math
 import pdb
 from scipy import signal
 from scipy.ndimage import gaussian_filter
-from PIL import Image
-
 
 # UTILS
 def load_parameters():
