@@ -340,13 +340,15 @@ def val_generator(num_steps,h5_path, params):
 
 def make_history(model_history, model_name):
 
+    model_history=model_history.history
+    pickle_out = open('modelHistory/' +sys.argv[2] +'.pickle', 'wb')
+    pickle.dump(model_history, pickle_out)
+    pickle_out.close()
+
     loss = model_history['loss']
     acc = model_history['acc']
     val_loss = model_history['val_loss']
     val_acc = model_history['val_acc']
-
-    for x in range(len(loss)):
-        print('loss: ', loss[x], 'acc: ', acc[x], 'val_loss: ', val_loss[x], 'val_acc: ', val_acc[x])
 
     name='Train and Val acc'
     epochs = range(1, len(acc) + 1)

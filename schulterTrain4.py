@@ -89,9 +89,7 @@ history = model.fit_generator(train_generator(params['num_train_steps'], hdf5_pa
 print(params)
 print('Training took: ' +str(time.time()-start_time) +' seconds.')
 
-make_history(history.history, sys.argv[2])
+make_history(history, sys.argv[2])
 
 # save model history to disk as the same name as model
-pickle_out = open('modelHistory/' +sys.argv[2] +'.pickle', 'wb')
-pickle.dump(history.history, pickle_out)
-pickle_out.close()
+
