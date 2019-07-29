@@ -50,7 +50,7 @@ def extract_feature(audio_path, params):
     mel[mel < params['min_clip']] = params['min_clip']
     mel = librosa.amplitude_to_db(mel)
     # the line below looks like it doesnt get 0 mean and unit var by each mel line
-    mel = (mel - np.mean(mel))/np.std(mel)
+    # mel = (mel - np.mean(mel))/np.std(mel)
     print(mel.shape)
     return mel, audio_melframe_nums
 
