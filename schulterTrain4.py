@@ -11,6 +11,7 @@ import pickle
 import matplotlib.pyplot as plt
 import sys
 import time
+import pdb
 
 start_time=time.time()
 print('Ignore this test print' +str(time.time()-start_time))
@@ -52,8 +53,8 @@ num_val_steps=int(num_val_steps)
 # callbacks
 # save the best performing model
 save_best = ModelCheckpoint('models/' +sys.argv[2] +'.h5', monitor='val_loss', save_best_only=True)
-early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=3, verbose=0, mode='auto', baseline=None, restore_best_weights=False)
-x_val, y_val=load_linear_val_data(hdf5_path)
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=3, verbose=0, mode='auto', baseline=None, restore_best_weights=False)
+x_val, y_val=load_linear_val_data(hdf5_path, params)
 
 print(params)
 
@@ -80,10 +81,10 @@ print(params)
 history = model.fit_generator(train_generator(params['num_train_steps'], hdf5_path, params, float(sys.argv[3])),
                     steps_per_epoch=params['num_train_steps'],
                     epochs=params['epochs'],
-                    validation_data=val_generator(num_val_steps, hdf5_path, params),
-                    validation_steps=num_val_steps,
+                    validation_data=(x_val, y_val),
+                    # number of steps not needed when there is no generator
+                    # validation_steps=num_val_steps,
                     callbacks=[save_best,early_stop])
-print(params)
 
 print(params)
 print('Training took: ' +str(time.time()-start_time) +' seconds.')

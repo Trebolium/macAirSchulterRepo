@@ -223,19 +223,21 @@ def train_generator(num_steps, h5_path, params, filter_depth):
         # send data at the end of each batch
         yield x_data, y
 
-def load_linear_val_data(hdf5_path):
+def load_linear_val_data(hdf5_path, params):
 
     hdf5_file=h5py.File(hdf5_path, "r")
-    half_window=half_window
+    half_window=int(params['sample_frame_length']/2)
     x_data=[]
     y=[]
-    frame_skips=int(params['skip_size']/((1/params['fs'])*params['hop_length']))
-    print(frame_skips)
+    frame_skips=int(params['skip_size']/(((1/params['fs'])*params['hop_length'])))
+
 
     for song_index in range(int(params['songs_to_validate'])):
-        song_num_frames = hdf5_file['val_lengths'][song_index, ...]
+        print('loading song ', song_index, '/', int(params['songs_to_validate']))
+        song_num_frames = int(hdf5_file['val_lengths'][song_index, ...])
         max_index=song_num_frames-half_window
         next_song=False
+        print('x_data type is: ', type(x_data))
         for sample_index in range(half_window+1, max_index-1, frame_skips):
             if sample_index>=(song_num_frames-half_window-1):
                 next_song=True
@@ -260,12 +262,12 @@ def load_linear_val_data(hdf5_path):
                     else:
                         y.append(label_points[row-1][2])
                         # don't search any more rows
-                        break
+                        break  
         if next_song==True:
             break
-        x_data = np.asarray(x_data)
-        x_data = x_data.reshape((x_data.shape[0], x_data.shape[1], x_data.shape[2], 1))
-        y = np.asarray(y)
+    x_data = np.asarray(x_data)
+    x_data = x_data.reshape((x_data.shape[0], x_data.shape[1], x_data.shape[2], 1))
+    y = np.asarray(y)
     return x_data, y
 
 
@@ -280,7 +282,7 @@ def val_generator(num_steps,h5_path, params):
         for song_index in range(int(params['songs_to_validate'])):
             # print('StartLoop batch_iterator: ',batch_iterator)
             breakout=False
-            song_num_frames = hdf5_file['val_lengths'][song_index, ...]
+            song_num_frames = int(hdf5_file['val_lengths'][song_index, ...])
             sample_index = int(params['sample_frame_length']/2)
             # this for loop repeats after each batch is complete - hence the num_steps reference
             for i in range(num_steps):
