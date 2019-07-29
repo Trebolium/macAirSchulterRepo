@@ -85,6 +85,7 @@ dataset.create_dataset('val_labels',
 
 total_num_features=-1
 song_list=[]
+stats_list=[]
 
 # TRAIN TRAIN SET
 print('working on train set...')
@@ -110,6 +111,11 @@ for k, audio_path in enumerate(train_files):
   label_array = np.concatenate((label_array,zero_array),axis=0)
   dataset['train_labels'][total_num_features, ...] = label_array
   feature, audio_melframe_nums = extract_feature(audio_path, params)
+  m=np.mean(feature, axis=1)
+  std=np.std(feature, axis=1)
+  stats=m, std
+  stats_list.append(stats)
+
   # plot_save_feature('Train',feature, os.path.basename(audio_path))
   # we can deduce the label from the file name
   dataset['train_features'][total_num_features, ...] = feature
