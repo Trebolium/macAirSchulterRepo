@@ -7,7 +7,6 @@ except ImportError:
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.preprocessing.image import ImageDataGenerator
 import os
-import pickle
 import matplotlib.pyplot as plt
 import sys
 import time
