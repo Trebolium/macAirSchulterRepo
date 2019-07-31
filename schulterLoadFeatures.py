@@ -111,10 +111,12 @@ for k, audio_path in enumerate(train_files):
   label_array = np.concatenate((label_array,zero_array),axis=0)
   dataset['train_labels'][total_num_features, ...] = label_array
   feature, audio_melframe_nums = extract_feature(audio_path, params)
-  m=np.mean(feature, axis=1)
-  std=np.std(feature, axis=1)
-  stats=m, std
-  stats_list.append(stats)
+  
+  # n=feature.shape[1]
+  # m=np.mean(feature, axis=1)
+  # std=np.std(feature, axis=1)
+  # stats=n, m, std
+  # stats_list.append(stats)
 
   # plot_save_feature('Train',feature, os.path.basename(audio_path))
   # we can deduce the label from the file name
@@ -154,6 +156,13 @@ for a, aug_set in enumerate(aug_files):
     label_array = np.concatenate((label_array,zero_array),axis=0)
     dataset['train_labels'][total_num_features, ...] = label_array
     feature, audio_melframe_nums = extract_feature(audio_path, params)
+
+    # n=feature.shape[1]
+    # m=np.mean(feature, axis=1)
+    # std=np.std(feature, axis=1)
+    # stats=n, m, std
+    # stats_list.append(stats)
+
     # plot_save_feature('Train',feature, os.path.basename(audio_path))
     # we can deduce the label from the file name
     dataset['train_features'][total_num_features, ...] = feature
@@ -165,9 +174,33 @@ with open('saved_csvs/' +sys.argv[1] +"_songTrainH5Id.csv", "w") as csvFile:
     writer.writerows(song_list)
 csvFile.close()
 
+n,m,std=0
+# got this formula from https://math.stackexchange.com/questions/420077/find-standard-deviation-of-two-different-sets-of-numbers-when-combined
+for i, stats in enumerate(stats_list):
+  if i==0:
+    n=stats[0]
+    m=stats[1]
+    std=stats[2]
+  else:
+    #squared_sum_of_previous_set= (mean*mean)*(numOfNums-1) + (2*mean*sum_of_previous_set) - (numOfNums*mean*mean)
+    squared_sum_of_previous_set = (std*std)*(n-1) + (2*m*(n*m)) - (n*m*m)
+    squared_sum_of_current_set = (stats[2]*stats[2])*(stats[0]-1) + (2*stats[1]*(stats[0]*stats[1])) - (stats[0]*stats[1]*stats[1])
+    sum_of_prev_set=n*m
+    sum_of_curr_set=stats[0]*stats[1]
+    mean_of_both_sets=(m+stats[1])/2
+    num_elements_in_both_sets=n+stats[0]
+    squared_std_of_both_sets = ( (squared_sum_of_previous_set+squared_sum_of_current_set)-((2*mean_of_both_sets)*(sum_of_prev_set+sum_of_curr_set)) + (num_elements_in_both_sets*mean_of_both_sets) ) / (num_elements_in_both_sets-1)
+    std_of_both_sets=math.sqrt(squared_std_of_both_sets)
+
+
+
+
+print('setting 0 mean and unit variance across dataset...')
+
+
 song_list=[]
 
-# TRAIN TRAIN SET
+# TRAIN Val SET
 print('working on val set...')
 
 for k, audio_path in enumerate(val_files):
