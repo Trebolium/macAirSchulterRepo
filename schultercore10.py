@@ -1,5 +1,6 @@
 # updated to have the filter augmentation
 # updated to have LOCAL 0 mean and std unit variance
+# updated to have strides (it should have before, but this version disappeared)
 
 import librosa
 import yaml
@@ -52,7 +53,7 @@ def extract_feature(audio_path, params):
     mel[mel < params['min_clip']] = params['min_clip']
     mel = librosa.amplitude_to_db(mel)
     # the line below looks like it doesnt get 0 mean and unit var by each mel line
-    # mel = (mel - np.mean(mel))/np.std(mel)
+    mel = (mel - np.mean(mel))/np.std(mel)
     print(mel.shape)
     return mel, audio_melframe_nums
 
@@ -86,11 +87,12 @@ def generate_network(params):
     model = models.Sequential()
     # ***change inputs to match melspec tensors***
     model.add(layers.Conv2D(64, (3, 3), activation='relu', input_shape=(params['n_mel'], params['sample_frame_length'], 1)))
+    # add dropout here like hers?
     model.add(layers.Conv2D(32, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D((3, 3)))
+    model.add(layers.MaxPooling2D((3, 3), strides=(params['stride'], params['stride'])))
     model.add(layers.Conv2D(128, (3, 3), activation='relu'))
     model.add(layers.Conv2D(64, (3, 3), activation='relu'))
-    model.add(layers.MaxPooling2D((3, 3)))
+    model.add(layers.MaxPooling2D((3, 3), strides=(params['stride'], params['stride'])))
     model.add(layers.Flatten())
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(256, activation='relu'))
@@ -233,12 +235,13 @@ def load_linear_val_data(hdf5_path, params):
 
 
     for song_index in range(int(params['songs_to_validate'])):
-        print('loading song ', song_index, '/', int(params['songs_to_validate']))
+        print('loading song ', song_index+1, '/', int(params['songs_to_validate']))
         song_num_frames = int(hdf5_file['val_lengths'][song_index, ...])
         max_index=song_num_frames-half_window
         next_song=False
         print('x_data type is: ', type(x_data))
         for sample_index in range(half_window+1, max_index-1, frame_skips):
+            # print(sample_index)
             if sample_index>=(song_num_frames-half_window-1):
                 next_song=True
                 break
@@ -249,6 +252,7 @@ def load_linear_val_data(hdf5_path, params):
                 frame_time = sample_index*params['hop_length']/params['fs']
                 label_points=hdf5_file['val_labels'][song_index, ...]
                 previous_value=-1
+                # labels have been zero padding because of uniform fit into hdf5 file properly, so we don't know how many they originally had
                 for row in range(500):
                     # make sure the index doesn't accidently go into the padded zeros section
                     if label_points[row][0]>previous_value:

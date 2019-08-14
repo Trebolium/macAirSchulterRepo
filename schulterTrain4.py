@@ -1,9 +1,9 @@
 # requires arguments: hdf5 file, model name, db filter depth
 
 try:
-    from code.schultercore9 import *
+    from code.schultercore10 import *
 except ImportError:
-    from schultercore9 import *   # when running from terminal, the directory may not be identified as a package
+    from schultercore10 import *   # when running from terminal, the directory may not be identified as a package
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.preprocessing.image import ImageDataGenerator
 import os
@@ -52,10 +52,8 @@ num_val_steps=int(num_val_steps)
 # callbacks
 # save the best performing model
 save_best = ModelCheckpoint('models/' +sys.argv[2] +'.h5', monitor='val_loss', save_best_only=True)
-early_stop = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=7, verbose=0, mode='auto', baseline=None, restore_best_weights=False)
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=params['patience'], verbose=0, mode='auto', baseline=None, restore_best_weights=False)
 x_val, y_val=load_linear_val_data(hdf5_path, params)
-
-print(params)
 
 # train
 # train_datagen= ImageDataGenerator(

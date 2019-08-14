@@ -1,9 +1,9 @@
 # Arguments: hdf5 file (and song list csv) name
 
 try:
-    from code.schultercore9 import *
+    from code.schultercore10 import *
 except ImportError:
-    from schultercore9 import *   # when running from terminal, the directory may not be identified as a packagefrom keras.callbacks import ModelCheckpoint
+    from schultercore10 import *   # when running from terminal, the directory may not be identified as a packagefrom keras.callbacks import ModelCheckpoint
 # schultercore.py has additional functions
 import os, shutil, librosa
 import numpy as np
@@ -174,23 +174,23 @@ with open('saved_csvs/' +sys.argv[1] +"_songTrainH5Id.csv", "w") as csvFile:
     writer.writerows(song_list)
 csvFile.close()
 
-n,m,std=0
-# got this formula from https://math.stackexchange.com/questions/420077/find-standard-deviation-of-two-different-sets-of-numbers-when-combined
-for i, stats in enumerate(stats_list):
-  if i==0:
-    n=stats[0]
-    m=stats[1]
-    std=stats[2]
-  else:
-    #squared_sum_of_previous_set= (mean*mean)*(numOfNums-1) + (2*mean*sum_of_previous_set) - (numOfNums*mean*mean)
-    squared_sum_of_previous_set = (std*std)*(n-1) + (2*m*(n*m)) - (n*m*m)
-    squared_sum_of_current_set = (stats[2]*stats[2])*(stats[0]-1) + (2*stats[1]*(stats[0]*stats[1])) - (stats[0]*stats[1]*stats[1])
-    sum_of_prev_set=n*m
-    sum_of_curr_set=stats[0]*stats[1]
-    mean_of_both_sets=(m+stats[1])/2
-    num_elements_in_both_sets=n+stats[0]
-    squared_std_of_both_sets = ( (squared_sum_of_previous_set+squared_sum_of_current_set)-((2*mean_of_both_sets)*(sum_of_prev_set+sum_of_curr_set)) + (num_elements_in_both_sets*mean_of_both_sets) ) / (num_elements_in_both_sets-1)
-    std_of_both_sets=math.sqrt(squared_std_of_both_sets)
+# n,m,std=0
+# # got this formula from https://math.stackexchange.com/questions/420077/find-standard-deviation-of-two-different-sets-of-numbers-when-combined
+# for i, stats in enumerate(stats_list):
+#   if i==0:
+#     n=stats[0]
+#     m=stats[1]
+#     std=stats[2]
+#   else:
+#     #squared_sum_of_previous_set= (mean*mean)*(numOfNums-1) + (2*mean*sum_of_previous_set) - (numOfNums*mean*mean)
+#     squared_sum_of_previous_set = (std*std)*(n-1) + (2*m*(n*m)) - (n*m*m)
+#     squared_sum_of_current_set = (stats[2]*stats[2])*(stats[0]-1) + (2*stats[1]*(stats[0]*stats[1])) - (stats[0]*stats[1]*stats[1])
+#     sum_of_prev_set=n*m
+#     sum_of_curr_set=stats[0]*stats[1]
+#     mean_of_both_sets=(m+stats[1])/2
+#     num_elements_in_both_sets=n+stats[0]
+#     squared_std_of_both_sets = ( (squared_sum_of_previous_set+squared_sum_of_current_set)-((2*mean_of_both_sets)*(sum_of_prev_set+sum_of_curr_set)) + (num_elements_in_both_sets*mean_of_both_sets) ) / (num_elements_in_both_sets-1)
+#     std_of_both_sets=math.sqrt(squared_std_of_both_sets)
 
 
 
